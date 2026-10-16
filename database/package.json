@@ -1,0 +1,13 @@
+{
+  "name": "agronix-database",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Seed script for the Agronix MongoDB database",
+  "scripts": {
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "mongoose": "^7.6.0"
+  }
+}

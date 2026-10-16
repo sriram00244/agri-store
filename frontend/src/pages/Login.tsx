@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import AnimatedBackground from '../components/AnimatedBackground';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
-import { Sprout, ArrowRight, Sun, Moon, KeyRound } from 'lucide-react';
+import { Sprout, ArrowRight, Sun, Moon, KeyRound, Sparkles } from 'lucide-react';
 
 const Login: React.FC = () => {
     const { t } = useTranslation();
@@ -13,7 +13,7 @@ const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const { login } = useAuth();
+    const { login, guestLogin } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const message = location.state?.message;
@@ -32,6 +32,11 @@ const Login: React.FC = () => {
     const fillDemoCredentials = () => {
         setEmail('demo@agronix.demo');
         setPassword('Demo@1234');
+    };
+
+    const handleGuestAccess = () => {
+        guestLogin();
+        navigate('/dashboard');
     };
 
     return (
@@ -113,6 +118,16 @@ const Login: React.FC = () => {
                         <ArrowRight size={17} />
                     </button>
                 </form>
+
+                {/* Instant 1-Click Guest Access */}
+                <button
+                    type="button"
+                    onClick={handleGuestAccess}
+                    className="w-full mt-3 py-3 px-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-sm"
+                >
+                    <Sparkles size={15} className="text-emerald-500" />
+                    <span>Instant Guest Access (Explore All Features)</span>
+                </button>
 
                 {/* Quick Demo Login Pill */}
                 <div className="mt-5 pt-4 border-t border-gray-200 dark:border-white/10 flex items-center justify-between">

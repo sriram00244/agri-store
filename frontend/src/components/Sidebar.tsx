@@ -50,6 +50,9 @@ const Sidebar: React.FC = () => {
             title: t('coreFarming'),
             items: [
                 { path: '/dashboard', icon: <LayoutDashboard size={18} />, label: t('dashboard') },
+                { path: '/cultivation-cost', icon: <Calculator size={18} />, label: t('cultivationCost'), badge: 'NEW' },
+                { path: '/small-farmers', icon: <Sprout size={18} />, label: t('smallScaleFarmers'), badge: 'HOT' },
+                { path: '/contact-officer', icon: <MessageSquare size={18} />, label: t('contactOfficer') },
                 { path: '/crop-doctor', icon: <Microscope size={18} />, label: t('cropDoctor') },
                 { path: '/weather', icon: <CloudSun size={18} />, label: t('weather') },
                 { path: '/chat', icon: <MessageSquare size={18} />, label: t('aiAssistant') }
@@ -100,6 +103,7 @@ const Sidebar: React.FC = () => {
             ]
         }
     ];
+
 
     return (
         <aside className="w-64 h-screen flex-shrink-0 flex flex-col justify-between border-r border-emerald-900/30 dark:border-white/10 bg-emerald-950/95 dark:bg-slate-950/95 backdrop-blur-2xl text-white shadow-2xl select-none transition-all duration-300 z-40">

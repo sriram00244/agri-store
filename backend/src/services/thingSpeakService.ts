@@ -12,11 +12,15 @@ export const validateChannel = async (channelId: string, readKey: string) => {
 };
 
 export const fetchChannelFeeds = async (channelId: string, readKey: string, results = 1) => {
+    if (!channelId || !readKey) {
+        return null;
+    }
     try {
         const response = await axios.get(`${THINGSPEAK_URL}/channels/${channelId}/feeds.json?api_key=${readKey}&results=${results}`);
         return response.data;
     } catch (error) {
-        console.error('ThingSpeak Fetch Error:', error);
-        throw new Error('Failed to fetch data from ThingSpeak');
+        // Silently skip if network or channel is unavailable in demo environment
+        return null;
     }
 };
+

@@ -27,6 +27,9 @@ import ProfitCalculator from './pages/ProfitCalculator';
 import FarmerCropSales from './pages/FarmerCropSales';
 import AgroStore from './pages/AgroStore';
 import MyOrders from './pages/MyOrders';
+import CultivationCostCalculator from './pages/CultivationCostCalculator';
+import SmallScaleFarmers from './pages/SmallScaleFarmers';
+import ContactOfficer from './pages/ContactOfficer';
 
 function App() {
     return (
@@ -116,6 +119,54 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <ProfitCalculator />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/cultivation-cost"
+                        element={
+                            <PrivateRoute>
+                                <CultivationCostCalculator />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/cultivation-calculator"
+                        element={
+                            <PrivateRoute>
+                                <CultivationCostCalculator />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/small-farmers"
+                        element={
+                            <PrivateRoute>
+                                <SmallScaleFarmers />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/small-scale-farmers"
+                        element={
+                            <PrivateRoute>
+                                <SmallScaleFarmers />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/contact-officer"
+                        element={
+                            <PrivateRoute>
+                                <ContactOfficer />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/contact-agriculture-officer"
+                        element={
+                            <PrivateRoute>
+                                <ContactOfficer />
                             </PrivateRoute>
                         }
                     />

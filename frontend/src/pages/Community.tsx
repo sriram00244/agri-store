@@ -22,6 +22,21 @@ const Community = () => {
     const [fetchError, setFetchError] = useState('');
     const [room, setRoom] = useState('General');
 
+    // Safe Auth Header Extractor - avoids sending "Bearer undefined" or crashing on invalid sessions
+    const getAuthHeaders = (): Record<string, string> => {
+        try {
+            const userInfoStr = localStorage.getItem('userInfo');
+            if (!userInfoStr) return {};
+            const parsed = JSON.parse(userInfoStr);
+            if (parsed?.token && typeof parsed.token === 'string' && parsed.token !== 'undefined' && parsed.token.length > 10) {
+                return { Authorization: `Bearer ${parsed.token}` };
+            }
+        } catch {
+            // ignore JSON parse issues
+        }
+        return {};
+    };
+
     // Comment State
     const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
     const [commentText, setCommentText] = useState('');
@@ -30,13 +45,22 @@ const Community = () => {
     const fetchPosts = async () => {
         setFetchError('');
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo') || '{}').token;
-            const { data } = await axios.get(`${API_BASE}/api/community/posts?category=${category}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setPosts(data);
+            const headers = getAuthHeaders();
+            const { data } = await axios.get(`${API_BASE}/api/community/posts?category=${category}`, { headers });
+            setPosts(Array.isArray(data) ? data : []);
         } catch (error: any) {
             console.error(error);
+            // If token failed, clean invalid token from localStorage and retry without headers
+            if (error.response?.status === 401) {
+                try {
+                    localStorage.removeItem('userInfo');
+                    const { data } = await axios.get(`${API_BASE}/api/community/posts?category=${category}`);
+                    setPosts(Array.isArray(data) ? data : []);
+                    return;
+                } catch (retryErr) {
+                    console.error(retryErr);
+                }
+            }
             setFetchError(error.response?.data?.message || t('communityLoadError'));
         } finally {
             setInitialLoading(false);
@@ -65,13 +89,11 @@ const Community = () => {
         setLoading(true);
 
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo') || '{}').token;
+            const headers = getAuthHeaders();
             const { data } = await axios.post(`${API_BASE}/api/community/posts`, {
                 content: newPost,
                 category
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            }, { headers });
 
             // Socket emit for real-time (optional based on backend implementation)
             socket.emit('send_message', data);
@@ -87,25 +109,25 @@ const Community = () => {
 
     const handleLike = async (postId: string) => {
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo') || '{}').token;
+            const currentUserId = user?._id || 'guest_user';
 
             // Optimistic Update
             setPosts(prev => prev.map(post => {
                 if (post._id === postId) {
-                    const isLiked = post.likes.includes(user?._id);
+                    const likesArray = Array.isArray(post.likes) ? post.likes : [];
+                    const isLiked = likesArray.some((id: any) => id?.toString() === currentUserId?.toString());
                     return {
                         ...post,
                         likes: isLiked
-                            ? post.likes.filter((id: string) => id !== user?._id)
-                            : [...post.likes, user?._id]
+                            ? likesArray.filter((id: any) => id?.toString() !== currentUserId?.toString())
+                            : [...likesArray, currentUserId]
                     };
                 }
                 return post;
             }));
 
-            await axios.put(`${API_BASE}/api/community/posts/${postId}/like`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const headers = getAuthHeaders();
+            await axios.put(`${API_BASE}/api/community/posts/${postId}/like`, {}, { headers });
         } catch (error) {
             console.error("Like failed", error);
             fetchPosts(); // Revert on error
@@ -116,12 +138,10 @@ const Community = () => {
         if (!commentText.trim()) return;
         setCommentLoading(true);
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo') || '{}').token;
+            const headers = getAuthHeaders();
             const { data } = await axios.post(`${API_BASE}/api/community/posts/${postId}/comment`, {
                 text: commentText
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            }, { headers });
 
             // Update post in list with new comment data
             setPosts(prev => prev.map(p => p._id === postId ? data : p));
@@ -149,10 +169,8 @@ const Community = () => {
         const previousPosts = posts;
         setPosts(prev => prev.filter(p => p._id !== postId)); // optimistic
         try {
-            const token = JSON.parse(localStorage.getItem('userInfo') || '{}').token;
-            await axios.delete(`${API_BASE}/api/community/posts/${postId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const headers = getAuthHeaders();
+            await axios.delete(`${API_BASE}/api/community/posts/${postId}`, { headers });
         } catch (error) {
             console.error('Delete failed', error);
             setPosts(previousPosts); // revert on failure
@@ -171,10 +189,38 @@ const Community = () => {
                             </span>
                             {t('community')}
                         </h1>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Connect, discuss, and learn from fellow agricultural pioneers</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            {t('communitySubtitle')}
+                        </p>
                     </div>
 
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                        {/* Direct English & Tamil language switcher */}
+                        <div className="inline-flex items-center rounded-xl bg-emerald-950/10 dark:bg-slate-800/80 p-0.5 border border-emerald-500/20 shadow-xs">
+                            <button
+                                type="button"
+                                onClick={() => i18n.changeLanguage('en')}
+                                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                                    i18n.language.startsWith('en')
+                                        ? 'bg-emerald-600 text-white shadow-xs'
+                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                                }`}
+                            >
+                                English
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => i18n.changeLanguage('ta')}
+                                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                                    i18n.language.startsWith('ta')
+                                        ? 'bg-amber-500 text-amber-950 shadow-xs'
+                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                                }`}
+                            >
+                                தமிழ்
+                            </button>
+                        </div>
+
                         <div className="bg-white/80 dark:bg-slate-900/80 border border-gray-200/80 dark:border-slate-800 rounded-xl p-1 flex shadow-sm backdrop-blur-md">
                             {['General', 'Market', 'Pests'].map(c => (
                                 <button

@@ -1,14 +1,36 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Droplets, Thermometer, Wind, Activity, Clock, AlertTriangle, CloudRain, Gauge, Leaf, Sprout, TrendingUp, TrendingDown, IndianRupee } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {
+    Droplets,
+    Thermometer,
+    Wind,
+    Activity,
+    Clock,
+    AlertTriangle,
+    CloudRain,
+    Gauge,
+    Leaf,
+    Sprout,
+    TrendingUp,
+    TrendingDown,
+    IndianRupee,
+    Calculator,
+    ShieldCheck,
+    Languages,
+    ArrowRight
+} from 'lucide-react';
+
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import FarmCard from '../components/FarmCard';
 import ReportModal from '../components/ReportModal';
 import Layout from '../components/Layout';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE } from '../config';
+
 
 const randWalk = (value: number, min: number, max: number, step: number) => {
     const next = value + (Math.random() - 0.5) * step;
@@ -273,6 +295,127 @@ const Dashboard = () => {
                                 <span>{t('getReport')}</span>
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                {/* ROW 1-3: PRIORITY FARMER SERVICES DASHBOARD MENU ITEMS */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <h2 className="text-base font-extrabold text-gray-900 dark:text-white font-display">
+                                AgriLink Farmer Services (முதன்மை சேவைகள்)
+                            </h2>
+                        </div>
+                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                            Key Features
+                        </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* 1. LANGUAGE SELECTION CARD */}
+                        <div className="rounded-2xl border border-emerald-500/20 bg-white/90 dark:bg-slate-900/90 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between backdrop-blur-xl">
+                            <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-500 flex items-center justify-center border border-amber-400/30">
+                                        <Languages size={20} />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-full border border-amber-400/30">
+                                        {i18n.language.toUpperCase()}
+                                    </span>
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                                    1. {t('language')} (மொழி)
+                                </h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    Switch interface language anytime across all pages.
+                                </p>
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/5">
+                                <LanguageSwitcher variant="quick-toggle" />
+                            </div>
+                        </div>
+
+                        {/* 2. CULTIVATION COST CALCULATOR CARD */}
+                        <Link
+                            to="/cultivation-cost"
+                            className="group rounded-2xl border border-emerald-500/20 bg-white/90 dark:bg-slate-900/90 p-5 shadow-sm hover:shadow-lg hover:border-emerald-500/40 transition-all flex flex-col justify-between backdrop-blur-xl"
+                        >
+                            <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/30 group-hover:scale-110 transition-transform">
+                                        <Calculator size={20} />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                                        NEW
+                                    </span>
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                    2. {t('cultivationCost')}
+                                </h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    Calculate total cost, cost per acre, revenue & net profit with save report.
+                                </p>
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                <span>Calculate Now</span>
+                                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </Link>
+
+                        {/* 3. SMALL-SCALE FARMER SUPPORT CARD */}
+                        <Link
+                            to="/small-farmers"
+                            className="group rounded-2xl border border-amber-500/20 bg-white/90 dark:bg-slate-900/90 p-5 shadow-sm hover:shadow-lg hover:border-amber-500/40 transition-all flex flex-col justify-between backdrop-blur-xl"
+                        >
+                            <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30 group-hover:scale-110 transition-transform">
+                                        <Sprout size={20} />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30">
+                                        FEATURE
+                                    </span>
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                                    3. {t('smallScaleFarmers')}
+                                </h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    Small batch listings, price comparison, nearby buyers & Tamil voice guide.
+                                </p>
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs font-bold text-amber-600 dark:text-amber-400">
+                                <span>Open Hub</span>
+                                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </Link>
+
+                        {/* 4. CONTACT AGRICULTURE OFFICER CARD */}
+                        <Link
+                            to="/contact-officer"
+                            className="group rounded-2xl border border-teal-500/20 bg-white/90 dark:bg-slate-900/90 p-5 shadow-sm hover:shadow-lg hover:border-teal-500/40 transition-all flex flex-col justify-between backdrop-blur-xl"
+                        >
+                            <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="w-10 h-10 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center border border-teal-500/30 group-hover:scale-110 transition-transform">
+                                        <ShieldCheck size={20} />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-teal-800 dark:text-teal-300 bg-teal-500/15 px-2 py-0.5 rounded-full border border-teal-500/30">
+                                        GOVT
+                                    </span>
+                                </div>
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                                    4. {t('contactOfficer')}
+                                </h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    Submit farm issues, track reference status & access verified helplines.
+                                </p>
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs font-bold text-teal-600 dark:text-teal-400">
+                                <span>Get Assistance</span>
+                                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </Link>
                     </div>
                 </div>
 

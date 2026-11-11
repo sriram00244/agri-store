@@ -114,12 +114,23 @@ const Dashboard = () => {
     const isDemoMode = !activeFarm || !!thingSpeakError;
 
     const fetchFarms = async () => {
+        if (!API_BASE) {
+            setFarms([]);
+            return;
+        }
+
         try {
             const token = JSON.parse(localStorage.getItem('userInfo') || '{}').token;
             try {
                 const { data } = await axios.get(`${API_BASE}/api/farms`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+                if (!Array.isArray(data)) {
+                    console.error('Unexpected farms API response; expected an array.', data);
+                    setFarms([]);
+                    return;
+                }
+
                 setFarms(data);
                 if (data.length > 0 && !activeFarm) {
                     setActiveFarm(data[0]);

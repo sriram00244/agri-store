@@ -151,6 +151,7 @@ Every external integration is independently demo-safe:
 - Real `PUT /api/auth/profile` endpoint (Settings page used to be a fake `alert()`).
 - Removed a debug route that leaked email config.
 - Centralized the frontend API base URL via `VITE_API_URL` instead of 16 scattered hardcoded URLs.
+
 - Redacted a live Gmail address + app password that were hardcoded in `.env` and a debug script —
   **if this was ever a real account, treat that password as compromised and rotate it.**
 
@@ -188,3 +189,12 @@ catches real dependency/environment issues manual review can't:
 6. AI Assistant — try a suggested question and a free-text question.
 7. Language toggle — switch to Tamil, refresh the page, confirm it stays Tamil.
 8. Restart the backend — confirm Community posts are still there (with a real, non-in-memory MongoDB).
+
+## GitHub Pages (frontend only)
+
+The `Deploy frontend to GitHub Pages` workflow builds the Vite app and publishes it at
+`https://sriram00244.github.io/agri-store/`. In the repository settings, set
+**Pages → Build and deployment → Source** to **GitHub Actions**. Push to `main` to deploy.
+
+GitHub Pages hosts only static files; API-backed features require the backend to be hosted
+separately and `VITE_API_URL` configured for the frontend build.

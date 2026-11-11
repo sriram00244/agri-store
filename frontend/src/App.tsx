@@ -34,7 +34,7 @@ import ContactOfficer from './pages/ContactOfficer';
 function App() {
     return (
         <ThemeProvider>
-            <Router>
+            <Router basename={import.meta.env.BASE_URL}>
                 <AuthProvider>
                 <Routes>
                     <Route path="/login" element={<Login />} />
